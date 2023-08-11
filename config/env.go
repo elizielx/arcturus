@@ -9,6 +9,7 @@ type Configuration struct {
 	DatabasePassword string `mapstructure:"POSTGRES_PASSWORD"`
 	DatabaseName     string `mapstructure:"POSTGRES_DB"`
 	ServerPort       string `mapstructure:"SERVER_PORT"`
+	JWTSecret        string `mapstructure:"JWT_SECRET"`
 }
 
 func LoadConfiguration(path string) (Configuration, error) {
