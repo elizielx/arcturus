@@ -8,6 +8,7 @@ import (
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -36,6 +37,7 @@ func main() {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
 	server.POST("/login", login)
+	server.GET("/me", me, isAuthenticated)
 	server.Logger.Fatal(server.Start(":" + configuration.ServerPort))
 }
 
@@ -85,4 +87,51 @@ func login(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, response)
+}
+
+func me(c echo.Context) error {
+	var user models.User
+	result := db.GetDatabase().Where("username = ?", c.Get("username")).First(&user)
+	if result.Error != nil || result.RowsAffected == 0 {
+		return echo.ErrUnauthorized
+	}
+
+	user.Password = ""
+
+	return c.JSON(http.StatusOK, user)
+}
+
+func isAuthenticated(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		configuration, err := config.LoadConfiguration(".")
+		if err != nil {
+			panic(err)
+		}
+
+		tokenString := c.Request().Header.Get("Authorization")
+		if tokenString == "" {
+			return echo.ErrUnauthorized
+		}
+
+		parts := strings.Split(tokenString, " ")
+		if len(parts) != 2 || parts[0] != "Bearer" {
+			return echo.ErrUnauthorized
+		}
+
+		token, err := jwt.ParseWithClaims(parts[1], &Claims{}, func(token *jwt.Token) (interface{}, error) {
+			return []byte(configuration.JWTSecret), nil
+		})
+
+		if err != nil {
+			return echo.ErrUnauthorized
+		}
+
+		claims, ok := token.Claims.(*Claims)
+		if !ok {
+			return echo.ErrUnauthorized
+		}
+
+		c.Set("username", claims.Username)
+		return next(c)
+	}
 }
