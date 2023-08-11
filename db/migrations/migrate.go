@@ -23,14 +23,14 @@ func main() {
 
 	if *resetFlag {
 		log.Println("Dropping database")
-		err := db.GetDatabase().Migrator().DropTable(&models.User{}, &models.Division{}, &models.Poll{})
+		err := db.GetDatabase().Migrator().DropTable(&models.User{}, &models.Division{}, &models.Poll{}, &models.Choice{}, &models.Vote{})
 		if err != nil {
 			log.Fatal(err)
 			return
 		}
 	}
 
-	err := db.GetDatabase().AutoMigrate(&models.User{}, &models.Division{}, &models.Poll{})
+	err := db.GetDatabase().AutoMigrate(&models.User{}, &models.Division{}, &models.Poll{}, &models.Choice{}, &models.Vote{})
 	if err != nil {
 		log.Fatal(err)
 		return
