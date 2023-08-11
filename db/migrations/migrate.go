@@ -4,8 +4,8 @@ import (
 	"flag"
 	"github.com/elizielx/arcturus-api/config"
 	"github.com/elizielx/arcturus-api/db"
-	"github.com/elizielx/arcturus-api/models"
-	"github.com/elizielx/arcturus-api/utils"
+	models2 "github.com/elizielx/arcturus-api/internal/models"
+	"github.com/elizielx/arcturus-api/internal/utils"
 	"log"
 )
 
@@ -25,14 +25,14 @@ func main() {
 
 	if *resetFlag {
 		log.Println("Dropping database")
-		err := db.GetDatabase().Migrator().DropTable(&models.User{}, &models.Division{}, &models.Poll{}, &models.Choice{}, &models.Vote{})
+		err := db.GetDatabase().Migrator().DropTable(&models2.User{}, &models2.Division{}, &models2.Poll{}, &models2.Choice{}, &models2.Vote{})
 		if err != nil {
 			log.Fatal(err)
 			return
 		}
 	}
 
-	err := db.GetDatabase().AutoMigrate(&models.User{}, &models.Division{}, &models.Poll{}, &models.Choice{}, &models.Vote{})
+	err := db.GetDatabase().AutoMigrate(&models2.User{}, &models2.Division{}, &models2.Poll{}, &models2.Choice{}, &models2.Vote{})
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -52,9 +52,9 @@ func main() {
 }
 
 func seedUsers() error {
-	users := []models.User{
-		{Username: "admin", Password: "admin", Role: models.ADMIN},
-		{Username: "user", Password: "user", Role: models.USER},
+	users := []models2.User{
+		{Username: "admin", Password: "admin", Role: models2.ADMIN},
+		{Username: "user", Password: "user", Role: models2.USER},
 	}
 
 	for i := range users {
