@@ -8,8 +8,8 @@ import (
 type RoleLevels string
 
 const (
-	USER  RoleLevels = "user"
-	ADMIN RoleLevels = "admin"
+	USER  RoleLevels = "USER"
+	ADMIN RoleLevels = "ADMIN"
 )
 
 type User struct {
@@ -20,7 +20,7 @@ type User struct {
 	CreatedAt  time.Time  `json:"created_at"`
 	UpdatedAt  time.Time  `json:"updated_at"`
 	Division   Division   `gorm:"foreignKey:DivisionID" json:"division"`
-	DivisionID uint64     `json:"division_id"`
+	DivisionID *uint64    `json:"division_id"`
 }
 
 func (user *User) BeforeCreate(tx *gorm.DB) (err error) {

@@ -19,6 +19,7 @@ func init() {
 
 func main() {
 	resetFlag := flag.Bool("reset", false, "Reset database")
+	seedFlag := flag.Bool("seed", false, "Seed database")
 	flag.Parse()
 
 	if *resetFlag {
@@ -37,4 +38,31 @@ func main() {
 	}
 
 	log.Println("Migration successfully")
+
+	if *seedFlag {
+		log.Println("Seeding database")
+		users := seedUsers()
+		if users != nil {
+			log.Fatal(users)
+			return
+		}
+	}
+
+}
+
+func seedUsers() error {
+	users := []models.User{
+		{Username: "admin", Password: "admin", Role: models.ADMIN},
+		{Username: "user", Password: "user", Role: models.USER},
+	}
+
+	for _, user := range users {
+		if err := db.GetDatabase().Create(&user).Error; err != nil {
+			log.Fatal(err)
+			return err
+		}
+	}
+
+	log.Println("Users successfully seeded")
+	return nil
 }
