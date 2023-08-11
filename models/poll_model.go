@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"gorm.io/gorm"
+	"time"
+)
 
 type Poll struct {
 	ID          uint64    `gorm:"primaryKey;autoIncrement" json:"id"`
@@ -12,4 +15,20 @@ type Poll struct {
 	DeletedAt   time.Time `gorm:"index" json:"deleted_at"`
 	Creator     User      `gorm:"foreignKey:CreatedBy" json:"creator"`
 	CreatedBy   uint64    `json:"created_by"`
+}
+
+func (poll *Poll) BeforeCreate(tx *gorm.DB) (err error) {
+	poll.CreatedAt = time.Now()
+	poll.UpdatedAt = time.Now()
+	return nil
+}
+
+func (poll *Poll) BeforeUpdate(tx *gorm.DB) (err error) {
+	poll.UpdatedAt = time.Now()
+	return nil
+}
+
+func (poll *Poll) BeforeDelete(tx *gorm.DB) (err error) {
+	poll.DeletedAt = time.Now()
+	return nil
 }

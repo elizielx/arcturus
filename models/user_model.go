@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"gorm.io/gorm"
+	"time"
+)
 
 type RoleLevels string
 
@@ -18,4 +21,15 @@ type User struct {
 	UpdatedAt  time.Time  `json:"updated_at"`
 	Division   Division   `gorm:"foreignKey:DivisionID" json:"division"`
 	DivisionID uint64     `json:"division_id"`
+}
+
+func (user *User) BeforeCreate(tx *gorm.DB) (err error) {
+	user.CreatedAt = time.Now()
+	user.UpdatedAt = time.Now()
+	return nil
+}
+
+func (user *User) BeforeUpdate(tx *gorm.DB) (err error) {
+	user.UpdatedAt = time.Now()
+	return nil
 }
