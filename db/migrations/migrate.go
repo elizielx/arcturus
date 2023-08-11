@@ -5,6 +5,7 @@ import (
 	"github.com/elizielx/arcturus-api/config"
 	"github.com/elizielx/arcturus-api/db"
 	"github.com/elizielx/arcturus-api/models"
+	"github.com/elizielx/arcturus-api/utils"
 	"log"
 )
 
@@ -56,8 +57,15 @@ func seedUsers() error {
 		{Username: "user", Password: "user", Role: models.USER},
 	}
 
-	for _, user := range users {
-		if err := db.GetDatabase().Create(&user).Error; err != nil {
+	for i := range users {
+		hashedPassword, err := utils.HashPassword(users[i].Password)
+		if err != nil {
+			log.Fatal(err)
+			return err
+		}
+		users[i].Password = hashedPassword
+
+		if err := db.GetDatabase().Create(&users[i]).Error; err != nil {
 			log.Fatal(err)
 			return err
 		}
