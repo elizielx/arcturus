@@ -22,5 +22,6 @@ func main() {
 	server = echo.New()
 	routes.SetupAuthRoutes(server)
 	routes.SetupUserRoutes(server)
+	routes.SetupPollRoutes(server)
 	server.Logger.Fatal(server.Start(":" + configuration.ServerPort))
 }
