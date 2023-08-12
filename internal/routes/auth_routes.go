@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/elizielx/arcturus-api/config"
 	"github.com/elizielx/arcturus-api/db"
+	"github.com/elizielx/arcturus-api/internal/api"
 	"github.com/elizielx/arcturus-api/internal/models"
 	"github.com/elizielx/arcturus-api/internal/utils"
 	"github.com/golang-jwt/jwt"
@@ -13,6 +14,7 @@ import (
 
 func SetupAuthRoutes(e *echo.Echo) {
 	e.POST("/login", login)
+	e.POST("/logout", logout, api.IsAuthenticated)
 }
 
 func login(c echo.Context) error {
@@ -56,4 +58,8 @@ func login(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, response)
+}
+
+func logout(c echo.Context) error {
+	return c.JSON(http.StatusOK, "Logged out")
 }
