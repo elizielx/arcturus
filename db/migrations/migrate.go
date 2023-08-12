@@ -7,6 +7,8 @@ import (
 	models2 "github.com/elizielx/arcturus-api/internal/models"
 	"github.com/elizielx/arcturus-api/internal/utils"
 	"log"
+	"math/rand"
+	"time"
 )
 
 func init() {
@@ -42,9 +44,16 @@ func main() {
 
 	if *seedFlag {
 		log.Println("Seeding database")
-		users := seedUsers()
-		if users != nil {
-			log.Fatal(users)
+
+		err := seedUsers()
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+
+		err = seedPolls()
+		if err != nil {
+			log.Fatal(err)
 			return
 		}
 	}
@@ -73,4 +82,27 @@ func seedUsers() error {
 
 	log.Println("Users successfully seeded")
 	return nil
+}
+
+func seedPolls() error {
+	polls := []models2.Poll{
+		{Title: "Qual a melhor linguagem de programação? 1", Description: "Qual a melhor linguagem de programação?", Deadline: time.Now().Add(time.Hour * 2), CreatedBy: uint64(generateNumberBetween(1, 2))},
+		{Title: "Qual a melhor linguagem de programação? 2", Description: "Qual a melhor linguagem de programação?", Deadline: time.Now().Add(time.Hour * 2), CreatedBy: uint64(generateNumberBetween(1, 2))},
+		{Title: "Qual a melhor linguagem de programação? 3", Description: "Qual a melhor linguagem de programação?", Deadline: time.Now().Add(time.Hour * 2), CreatedBy: uint64(generateNumberBetween(1, 2))},
+		{Title: "Qual a melhor linguagem de programação? 4", Description: "Qual a melhor linguagem de programação?", Deadline: time.Now().Add(time.Hour * 2), CreatedBy: uint64(generateNumberBetween(1, 2))},
+	}
+
+	for i := range polls {
+		if err := db.GetDatabase().Create(&polls[i]).Error; err != nil {
+			log.Fatal(err)
+			return err
+		}
+	}
+
+	log.Println("Polls successfully seeded")
+	return nil
+}
+
+func generateNumberBetween(min, max int) int {
+	return min + rand.Intn(max-min)
 }
